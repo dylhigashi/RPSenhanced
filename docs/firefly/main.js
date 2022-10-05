@@ -60,7 +60,8 @@ options = {
 /**
  * @typedef {{
  * pos: Vector,
- * speed: number
+ * speed: number,
+ * color: Color
  * }} Firefly
  */
 
@@ -99,31 +100,66 @@ let player;
  */
  let numWasps;
 
+ /**
+ * @typedef {{
+  * units: number,
+  * color: Color
+  * }} Order
+  */
+ 
+ /**
+  * @type { Order }
+  */
+ let order;
+
+/**
+  * @type { Color [] }
+  */
+ let colors;
+
+ colors = ["red", "purple", "yellow", "blue"];
 
 function update() {
 	if (!ticks) {
+		
 		let xPos = 10;
 		fireflies = times(settings.NUM_FIREFLIES, () => {
 			xPos += 15;
 			const posX = xPos;
-            const posY = rnd(10, settings.HEIGHT - 30);
+            const posY = rnd(25, settings.HEIGHT - 30);
 			return {
 				pos: vec(posX, posY),
-				speed: rnd(settings.FIREFLY_SPEED_MIN, settings.FIREFLY_SPEED_MAX)
+				speed: rnd(settings.FIREFLY_SPEED_MIN, settings.FIREFLY_SPEED_MAX),
+				color: colors[Math.floor(Math.random() * 4)]
 			};
 		});
 
+		order = {
+			units: Math.floor(rnd(0, 5)),
+			color: colors[Math.floor(Math.random() * 4)]
+		}
 		wasps = [];
 	}
+	//Display lines at top
+	line(0, 20, 300, 20, 4);
+	line(125, 0, 125, 20, 4);
+	line(175, 0, 175, 20, 4);
+
+	//Display order
+	color(order.color);
+	box(145, 10, 3);
+	text("x" + order.units, 152, 10)
+	color("black");
 
 	//if fireflies get caught or go off screen, spawn new ones up to the number there should be (settings.NUM_FIREFLIES)
 	if(fireflies.length < settings.NUM_FIREFLIES) {
 		for(let i = fireflies.length; i < settings.NUM_FIREFLIES ; i++) {
 			const posX = 10;
-			const posY = rnd(10, settings.HEIGHT- 30);
+			const posY = rnd(25, settings.HEIGHT- 30);
 			fireflies.push({
 				pos: vec(posX, posY),
-				speed: rnd(settings.ENEMY_MIN_BASE_SPEED, settings.ENEMY_MAX_BASE_SPEED)
+				speed: rnd(settings.ENEMY_MIN_BASE_SPEED, settings.ENEMY_MAX_BASE_SPEED),
+				color: colors[Math.floor(Math.random() * 4)]
 			});
 		}
 	}
@@ -131,7 +167,7 @@ function update() {
 	//Spawn wasps at intervals of time
 	if(ticks === 100) {
 		const posX = 10;
-		const posY = rnd(20, settings.HEIGHT- 30);
+		const posY = rnd(35, settings.HEIGHT- 30);
 		wasps.push({
 			pos: vec(posX, posY),
 			speed: 0.32
@@ -142,7 +178,7 @@ function update() {
 	if(wasps.length < numWasps) {
 		for(let i = wasps.length; i < numWasps; i++) {
 			const posX = 10;
-			const posY = rnd(20, settings.HEIGHT- 30);
+			const posY = rnd(25, settings.HEIGHT- 30);
 			wasps.push({
 				pos: vec(posX, posY),
 				speed: 0.32
