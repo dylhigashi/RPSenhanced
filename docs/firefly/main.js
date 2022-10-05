@@ -1,5 +1,3 @@
-//push test LC
-
 title = "Firefly Catch";
 
 description = `
@@ -46,6 +44,8 @@ const settings = {
     PLAYER_GUN_OFFSET: 3,
 
 	NUM_FIREFLIES: 20,
+
+	PLAYER_SPEED: 1,
 };
 
 options = {
@@ -84,11 +84,11 @@ let fireflies;
  */
 let wasps;
 
+//controlling the Jar/Player
 /**
  * @typedef {{
  * pos: Vector,
- * firingCooldown: number,
- * isFiringLeft: boolean
+ * speed: number
  * }} Player
  */
 
@@ -141,7 +141,22 @@ function update() {
 			color: colors[Math.floor(Math.random() * 4)]
 		}
 		wasps = [];
+
+
+		//player
+		player = {
+			pos:vec(settings.WIDTH * 0.5, settings.HEIGHT - 3), 
+			speed: settings.PLAYER_SPEED
+		};
 	}
+
+	//print jar out
+	char("c", player.pos);
+	//trying to move it
+	//player.pos = vec(input.pos.x, input.pos.y);
+	//player.pos = vec(settings.Width + 10, settings.HEIGHT);
+
+
 	//Display lines at top
 	line(0, 20, 300, 20, 4);
 	line(125, 0, 125, 20, 4);
@@ -202,6 +217,17 @@ function update() {
 		f.pos.x += 0.25;
 		char("a", f.pos);
 	});
+
+	//update function for player
+	// player.forEach((p) => {
+	// 	//move jar to the left
+	// 	p.pos.x += p.speed;
+	// });
+	// player => {
+	// 	player.pos.x += 1;
+	// 	char("c", player.pos);
+	// }
+
 
 
 	//remove conditions for wasps and fireflies
