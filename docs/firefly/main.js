@@ -102,8 +102,10 @@ let player;
 
 function update() {
 	if (!ticks) {
+		let xPos = 10;
 		fireflies = times(settings.NUM_FIREFLIES, () => {
-			const posX = rnd(0, settings.WIDTH);
+			xPos += 15;
+			const posX = xPos;
             const posY = rnd(10, settings.HEIGHT - 30);
 			return {
 				pos: vec(posX, posY),
