@@ -1,12 +1,13 @@
 title = "Firefly Catch";
 
 description = `
-  Catch fireflies 
-        and 
+  Catch fireflies, 
+
   avoid wasps!
 `;
 
 characters = [
+// firefly
 `
   ll
   ll
@@ -14,19 +15,47 @@ ccllcc
 ccllcc
 ccllcc
 cc  cc
-`,`
+`, // wasp
+`
 rr  rr
 rrrrrr
 rrpprr
 rrrrrr
   rr
   rr
-`,`
-y  y
-yyyyyy
- y  y
-yyyyyy
- y  y
+`,
+// jar lid
+`
+      
+      
+      
+      
+llllll
+llllll 
+`, // jar base frame 1
+`
+L    L
+Lc   L
+L    L
+L  y L
+L    L
+ LLLL 
+`, // jar base frame 2
+`
+L    L
+L    L
+L  c L
+L y  L
+L    L
+ LLLL 
+`, // hands
+`
+  lll 
+  lll
+  lll 
+   l    
+   l  
+   l    
 `
 ];
 
@@ -56,7 +85,7 @@ options = {
     seed: 42069,
     isPlayingBgm: false,
     isReplayEnabled: true,
-    theme: "dark"
+    theme: "shapeDark"
 };
 
 /**
@@ -151,10 +180,22 @@ function update() {
 	}
 
 	//print jar out
-	char("c", player.pos);
+	char("d", player.pos.x, player.pos.y);
+	// const d = char(addWithCharCode("d", floor(ticks/30)%2), player.pos); figuring out animation
+	char("c", player.pos.x, player.pos.y - 6);
+	if (input.isPressed && player.pos.y > 25) {
+		player.pos.y--
+		char("c", player.pos.x, player.pos.y - 7, { rotation: 45 });
+	} else {
+		player.pos.y++
+	}
 	//trying to move it
 	//player.pos = vec(input.pos.x, input.pos.y);
 	//player.pos = vec(settings.Width + 10, settings.HEIGHT);
+
+	// hands?
+	char("f", player.pos.x - 4, player.pos.y + 6);
+	char("f", player.pos.x + 3, player.pos.y + 6);
 
 
 	//Display lines at top
