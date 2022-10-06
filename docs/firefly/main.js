@@ -120,7 +120,8 @@ options = {
  * @typedef {{
  * pos: Vector,
  * speed: number,
- * color: Color
+ * color: Color,
+ * id: string
  * }} Firefly
  */
 
@@ -163,7 +164,8 @@ let player;
  * @typedef {{
   * units: number,
   * color: Color,
-  * base: number
+  * base: number,
+  * id: string
   * }} Order
   */
  
@@ -189,7 +191,7 @@ let player;
  */
  let spawnedFirst;
 
-
+ let ids = ["a", "g", "h", "i"];
 function update() {
 	if (!ticks) {
 		
@@ -198,17 +200,21 @@ function update() {
 			xPos += 15;
 			const posX = xPos;
             const posY = rnd(25, settings.HEIGHT - 30);
+			const rand = Math.floor(Math.random() * 4)
 			return {
 				pos: vec(posX, posY),
 				speed: rnd(settings.FIREFLY_SPEED_MIN, settings.FIREFLY_SPEED_MAX),
-				color: colors[Math.floor(Math.random() * 4)]
+				color: colors[rand],
+				id: ids[rand]
 			};
 		});
 		const num = Math.floor(rnd(1, 5));
+		const rand = Math.floor(Math.random() * 4);
 		order = {
 			base: num,
 			units: num,
-			color: colors[Math.floor(Math.random() * 4)]
+			color: colors[rand],
+			id: ids[rand]
 
 		}
 		wasps = [];
@@ -262,7 +268,7 @@ function update() {
 
 	//Display order
 	color(order.color);
-	box(145, 10, 3);
+	char(order.id, 145, 10);
 	text("x" + order.units, 152, 10)
 	color("black");
 
@@ -276,10 +282,12 @@ function update() {
 		for(let i = fireflies.length; i < settings.NUM_FIREFLIES ; i++) {
 			const posX = 10;
 			const posY = rnd(25, settings.HEIGHT- 30);
+			const rand = Math.floor(Math.random() * 4);
 			fireflies.push({
 				pos: vec(posX, posY),
 				speed: rnd(settings.ENEMY_MIN_BASE_SPEED, settings.ENEMY_MAX_BASE_SPEED),
-				color: colors[Math.floor(Math.random() * 4)]
+				color: colors[rand],
+				id: ids[rand]
 			});
 		}
 	}
@@ -322,18 +330,7 @@ function update() {
 	fireflies.forEach((f) => {
 		
 		f.pos.x += 0.25;
-		if(f.color == colors[0]) {
-			char("g", f.pos);
-		}
-		else if(f.color == colors[1]) {
-			char("g", f.pos);
-		}
-		else if(f.color == colors[2]) {
-			char("h", f.pos);
-		}
-		else if(f.color == colors[3]) {
-			char("i", f.pos);
-		}
+		char(f.id, f.pos);
 	});
 
 
@@ -341,18 +338,7 @@ function update() {
 	//remove conditions for wasps and fireflies
 	remove(fireflies, (f) => {
 		let isCollidingFLYINJAR
-		if(f.color == colors[0]) {
-			isCollidingFLYINJAR = char("a", f.pos).isColliding.char.c;
-		}
-		else if(f.color == colors[1]) {
-			isCollidingFLYINJAR = char("g", f.pos).isColliding.char.c;
-		}
-		else if(f.color == colors[2]) {
-			isCollidingFLYINJAR = char("h", f.pos).isColliding.char.c;
-		}
-		else if(f.color == colors[3]) {
-			isCollidingFLYINJAR = char("i", f.pos).isColliding.char.c;
-		}
+		isCollidingFLYINJAR = char(f.id, f.pos).isColliding.char.c;
 		//const isCollidingFLYINJAR = char("a", f.pos).isColliding.char.c;
 
 		//small particle explosion
@@ -380,10 +366,12 @@ function update() {
 				const num = Math.floor(rnd(1, 5));
 				score += order.base*order.base;
 				play("powerUp");
+				const rand = Math.floor(Math.random() * 4);
 				order = {
 					base: num,
 					units: num,
-					color: colors[Math.floor(Math.random() * 4)]
+					color: colors[rand],
+					id: ids[rand]
 
 				}
 			}
