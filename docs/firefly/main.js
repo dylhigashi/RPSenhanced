@@ -74,7 +74,7 @@ const settings = {
 
 	NUM_FIREFLIES: 20,
 
-	PLAYER_SPEED: 1,
+	PLAYER_SPEED: 0.5,
 };
 
 options = {
@@ -174,7 +174,8 @@ function update() {
 
 		//player
 		player = {
-			pos:vec(settings.WIDTH * 0.5, settings.HEIGHT - 3), 
+			//pos:vec(settings.WIDTH * 0.5, settings.HEIGHT - 3), 
+			pos:vec(settings.WIDTH * 0.5, settings.HEIGHT - 20),
 			speed: settings.PLAYER_SPEED
 		};
 	}
@@ -189,9 +190,25 @@ function update() {
 	} else {
 		player.pos.y++
 	}
+	//making boundaries
+	player.pos.clamp(0, settings.WIDTH , 0, settings.HEIGHT - 10);
 	//trying to move it
-	//player.pos = vec(input.pos.x, input.pos.y);
-	//player.pos = vec(settings.Width + 10, settings.HEIGHT);
+	//making jar unable to move left and right when button is pressed
+	if (!input.isPressed && player.pos.y == settings.HEIGHT-10) {
+		//constantly move player left and right
+			player.pos.x += settings.PLAYER_SPEED;
+		
+		if (player.pos.x == settings.WIDTH -9 || player.pos.x == 9) {
+			//player.pos.x = settings.WIDTH;
+			settings.PLAYER_SPEED *= -1;
+		}
+	}
+
+	//collision detection
+	// remove(fireflies, (f) => {
+	// 	const isCollidingWithFlies = char
+	// });
+
 
 	// hands?
 	char("f", player.pos.x - 4, player.pos.y + 6);
@@ -259,21 +276,21 @@ function update() {
 		char("a", f.pos);
 	});
 
-	//update function for player
-	// player.forEach((p) => {
-	// 	//move jar to the left
-	// 	p.pos.x += p.speed;
-	// });
-	// player => {
-	// 	player.pos.x += 1;
-	// 	char("c", player.pos);
-	// }
-
 
 
 	//remove conditions for wasps and fireflies
 	remove(fireflies, (f) => {
-		return f.pos.x > settings.WIDTH;
+
+
+		const isCollidingFLYINJAR = char("a", f.pos).isColliding.char.c;
+
+		//small particle explosion
+		if (isCollidingFLYINJAR) {
+			color("red");
+			particle(f.pos);
+		}
+
+		return (isCollidingFLYINJAR || f.pos.x > settings.WIDTH );
 	});
 	remove(wasps, (w) => {
 		return w.pos.y > settings.HEIGHT || w.pos.y < 0;
