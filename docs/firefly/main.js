@@ -7,22 +7,23 @@ description = `
 `;
 
 characters = [
-// firefly
+// cyan firefly
 `
-  ll
-  ll
-ccllcc
-ccllcc
-ccllcc
-cc  cc
-`, // wasp
+ ccc  
+ c c  
+ c ccc
+ccc  c
+cccccc
+ccc   
+`, 
+// wasp
 `
-rr  rr
-rrrrrr
-rrpprr
-rrrrrr
-  rr
-  rr
+  LLL 
+LLL L 
+L L L 
+yLyLL 
+rLyLll
+yLyL  
 `,
 // jar lid
 `
@@ -56,6 +57,33 @@ L    L
    l    
    l  
    l    
+`,
+// purple firefly
+`
+ ppp  
+ p p  
+ p ppp
+ppp  p
+pppppp
+ppp   
+`,
+// green firefly
+`
+ ggg  
+ g g  
+ g ggg
+ggg  g
+gggggg
+ggg   
+`,
+// blue firefly
+`
+ bbb  
+ b b  
+ b bbb
+bbb  b
+bbbbbb
+bbb   
 `
 ];
 
