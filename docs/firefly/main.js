@@ -134,7 +134,8 @@ let player;
  /**
  * @typedef {{
   * units: number,
-  * color: Color
+  * color: Color,
+  * base: number
   * }} Order
   */
  
@@ -150,6 +151,11 @@ let player;
 
  colors = ["red", "purple", "yellow", "blue"];
 
+ /**
+ * @type { number }
+ */
+  let numLives = 3;
+
 function update() {
 	if (!ticks) {
 		
@@ -164,10 +170,12 @@ function update() {
 				color: colors[Math.floor(Math.random() * 4)]
 			};
 		});
-
+		const num = Math.floor(rnd(1, 5));
 		order = {
-			units: Math.floor(rnd(0, 5)),
+			base: 1,
+			units: 1,
 			color: colors[Math.floor(Math.random() * 4)]
+
 		}
 		wasps = [];
 
@@ -193,6 +201,8 @@ function update() {
 	//making boundaries
 	player.pos.clamp(0, settings.WIDTH , 0, settings.HEIGHT - 10);
 	//trying to move it
+
+
 	//making jar unable to move left and right when button is pressed
 	if (!input.isPressed && player.pos.y == settings.HEIGHT-10) {
 		//constantly move player left and right
@@ -204,11 +214,7 @@ function update() {
 		}
 	}
 
-	//collision detection
-	// remove(fireflies, (f) => {
-	// 	const isCollidingWithFlies = char
-	// });
-
+	
 
 	// hands?
 	char("f", player.pos.x - 4, player.pos.y + 6);
@@ -225,6 +231,11 @@ function update() {
 	box(145, 10, 3);
 	text("x" + order.units, 152, 10)
 	color("black");
+
+	//hearts
+	for(let i = 0; i < numLives; i++) {
+		char("b", 50 + i*10, 9);
+	}
 
 	//if fireflies get caught or go off screen, spawn new ones up to the number there should be (settings.NUM_FIREFLIES)
 	if(fireflies.length < settings.NUM_FIREFLIES) {
@@ -286,13 +297,48 @@ function update() {
 
 		//small particle explosion
 		if (isCollidingFLYINJAR) {
-			color("red");
+			color(f.color);
 			particle(f.pos);
+			color("black");
+
+			//check if part of order
+			if(order.color == f.color) {
+				order.units--;
+			}
+			else {
+				order.units = order.base;
+			}
+
+			//if order goes through make new one
+			if(order.units == 0) {
+				color(f.color);
+				particle(150, 10);
+				color("black");
+				const num = Math.floor(rnd(1, 5));
+				score += order.units^2;
+				order = {
+					base: num,
+					units: num,
+					color: colors[Math.floor(Math.random() * 4)]
+
+				}
+			}
+
 		}
 
 		return (isCollidingFLYINJAR || f.pos.x > settings.WIDTH );
 	});
 	remove(wasps, (w) => {
-		return w.pos.y > settings.HEIGHT || w.pos.y < 0;
+		const isCollidingWasp = char("b", w.pos).isColliding.char.c;
+
+		if (isCollidingWasp) {
+			color("red");
+			particle(w.pos);
+			particle(50 + numLives*10, 9)
+			color("black");
+			numLives--;
+		}
+
+		return isCollidingWasp || w.pos.y > settings.HEIGHT || w.pos.y < 0;
 	})
 }
