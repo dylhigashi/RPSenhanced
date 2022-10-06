@@ -110,8 +110,8 @@ options = {
     isCapturing: true,
     isCapturingGameCanvasOnly: true,
     captureCanvasScale: 2,
-    seed: 42069,
-    isPlayingBgm: false,
+    seed: 4848,
+    isPlayingBgm: true,
     isReplayEnabled: true,
     theme: "shapeDark"
 };
@@ -177,12 +177,18 @@ let player;
   */
  let colors;
 
- colors = ["red", "purple", "yellow", "blue"];
+ colors = ["cyan", "purple", "green", "blue"];
 
  /**
  * @type { number }
  */
   let numLives = 3;
+
+  /**
+ * @type { Boolean }
+ */
+ let spawnedFirst;
+
 
 function update() {
 	if (!ticks) {
@@ -200,8 +206,8 @@ function update() {
 		});
 		const num = Math.floor(rnd(1, 5));
 		order = {
-			base: 1,
-			units: 1,
+			base: num,
+			units: num,
 			color: colors[Math.floor(Math.random() * 4)]
 
 		}
@@ -279,17 +285,21 @@ function update() {
 	}
 
 	//Spawn wasps at intervals of time
-	if(ticks === 100) {
+	if(ticks === 100 && numWasps == 0) {
 		const posX = 10;
 		const posY = rnd(35, settings.HEIGHT- 30);
 		wasps.push({
 			pos: vec(posX, posY),
 			speed: 0.32
 		});
-		numWasps ++;
+		spawnedFirst = true;
 	}
+
+	numWasps = Math.floor(score/10) + (spawnedFirst ? 1:0);
+	console.log(score%10);
+
 	//if wasps get destroyed spawn more up to the number there should be on the screen
-	if(wasps.length < numWasps) {
+	if(wasps.length < numWasps + 1) {
 		for(let i = wasps.length; i < numWasps; i++) {
 			const posX = 10;
 			const posY = rnd(25, settings.HEIGHT- 30);
@@ -312,19 +322,42 @@ function update() {
 	fireflies.forEach((f) => {
 		
 		f.pos.x += 0.25;
-		char("a", f.pos);
+		if(f.color == colors[0]) {
+			char("g", f.pos);
+		}
+		else if(f.color == colors[1]) {
+			char("g", f.pos);
+		}
+		else if(f.color == colors[2]) {
+			char("h", f.pos);
+		}
+		else if(f.color == colors[3]) {
+			char("i", f.pos);
+		}
 	});
 
 
 
 	//remove conditions for wasps and fireflies
 	remove(fireflies, (f) => {
-
-
-		const isCollidingFLYINJAR = char("a", f.pos).isColliding.char.c;
+		let isCollidingFLYINJAR
+		if(f.color == colors[0]) {
+			isCollidingFLYINJAR = char("a", f.pos).isColliding.char.c;
+		}
+		else if(f.color == colors[1]) {
+			isCollidingFLYINJAR = char("g", f.pos).isColliding.char.c;
+		}
+		else if(f.color == colors[2]) {
+			isCollidingFLYINJAR = char("h", f.pos).isColliding.char.c;
+		}
+		else if(f.color == colors[3]) {
+			isCollidingFLYINJAR = char("i", f.pos).isColliding.char.c;
+		}
+		//const isCollidingFLYINJAR = char("a", f.pos).isColliding.char.c;
 
 		//small particle explosion
 		if (isCollidingFLYINJAR) {
+			
 			color(f.color);
 			particle(f.pos);
 			color("black");
@@ -332,9 +365,11 @@ function update() {
 			//check if part of order
 			if(order.color == f.color) {
 				order.units--;
+				play("coin");
 			}
 			else {
 				order.units = order.base;
+				play("explosion");
 			}
 
 			//if order goes through make new one
@@ -343,7 +378,8 @@ function update() {
 				particle(150, 10);
 				color("black");
 				const num = Math.floor(rnd(1, 5));
-				score += order.units^2;
+				score += order.base*order.base;
+				play("powerUp");
 				order = {
 					base: num,
 					units: num,
@@ -360,13 +396,23 @@ function update() {
 		const isCollidingWasp = char("b", w.pos).isColliding.char.c;
 
 		if (isCollidingWasp) {
+			play("hit");
 			color("red");
 			particle(w.pos);
 			particle(50 + numLives*10, 9)
 			color("black");
 			numLives--;
+			if(numLives == 0) {
+				numLives = 3;
+				numWasps = 0;
+				end("Ouch! Those stings hurt.");
+			}
 		}
 
 		return isCollidingWasp || w.pos.y > settings.HEIGHT || w.pos.y < 0;
 	})
+
+
+	
+
 }
